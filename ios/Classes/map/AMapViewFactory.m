@@ -34,6 +34,24 @@ static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
 }
 @end
 
+@interface MapEventHandler : NSObject <FlutterStreamHandler>
+@property(nonatomic) FlutterEventSink sink;
+@end
+
+@implementation MapEventHandler {
+}
+
+- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
+                                       eventSink:(FlutterEventSink)events {
+    _sink = events;
+    return nil;
+}
+
+- (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
+    return nil;
+}
+@end
+
 @implementation AMapViewFactory {
 }
 
@@ -60,8 +78,10 @@ static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
   UnifiedAMapOptions *_options;
   FlutterMethodChannel *_methodChannel;
   FlutterEventChannel *_markerClickedEventChannel;
+  FlutterEventChannel *_mapDragChangeEventChannel;
   MAMapView *_mapView;
   MarkerEventHandler *_eventHandler;
+  MapEventHandler *_mapHandler;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -132,7 +152,7 @@ static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
 
   _mapHandler = [[MapEventHandler alloc] init];
      _mapDragChangeEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@", mapDragChangeChannelName]
-                                                             binaryMessenger:[AMapBaseMapPlugin registrar].messenger];
+                                                             binaryMessenger:[AMapBasePlugin registrar].messenger];
      [_mapDragChangeEventChannel setStreamHandler:_mapHandler];
 }
 

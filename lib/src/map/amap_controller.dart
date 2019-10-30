@@ -16,11 +16,13 @@ class AMapController {
   final MethodChannel _mapChannel;
   final EventChannel _markerClickedEventChannel;
   final EventChannel _mapDragEventChannel;
+  final EventChannel _mapClickEventChannel;
 
   AMapController.withId(int id)
       : _mapChannel = MethodChannel('me.yohom/map$id'),
         _markerClickedEventChannel = EventChannel('me.yohom/marker_clicked$id'),
-        _mapDragEventChannel = EventChannel('me.yohom/map_drag_change');
+        _mapDragEventChannel = EventChannel('me.yohom/map_drag_change'),
+        _mapClickEventChannel = EventChannel('me.yohom/map_click_change');;
 
   void dispose() {}
 
@@ -270,4 +272,9 @@ class AMapController {
   Stream<LatLng> get mapDragEvent => _mapDragEventChannel
       .receiveBroadcastStream()
       .map((data) => LatLng.fromJson(jsonDecode(data)));
+
+  /// 地图点击数据
+  Stream<LatLng> get mapClickEvent => _mapClickEventChannel
+      .receiveBroadcastStream()
+      .map((data)=> LatLng.fromJson(jsonDecode(data)));
 }

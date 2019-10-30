@@ -15,6 +15,7 @@
 static NSString *mapChannelName = @"me.yohom/map";
 static NSString *markerClickedChannelName = @"me.yohom/marker_clicked";
 static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
+static NSString *mapClickChannelName = @"me.yohom/map_click_change";
 
 @interface MarkerEventHandler : NSObject <FlutterStreamHandler>
 @property(nonatomic) FlutterEventSink sink;
@@ -52,6 +53,24 @@ static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
 }
 @end
 
+@interface MapClickEventHandler : NSObject <FlutterStreamHandler>
+@property(nonatomic) FlutterEventSink sink;
+@end
+
+@implementation MapClickEventHandler {
+}
+
+- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
+                                       eventSink:(FlutterEventSink)events {
+  _sink = events;
+  return nil;
+}
+
+- (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
+  return nil;
+}
+@end
+
 @implementation AMapViewFactory {
 }
 
@@ -82,6 +101,7 @@ static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
   MAMapView *_mapView;
   MarkerEventHandler *_eventHandler;
   MapEventHandler *_mapHandler;
+  MapClickEventHandler *_mapClickHandler;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -147,13 +167,18 @@ static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
 
   _eventHandler = [[MarkerEventHandler alloc] init];
   _markerClickedEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@%lld", markerClickedChannelName, _viewId]
-                                                         binaryMessenger:[AMapBasePlugin registrar].messenger];
+                                                        binaryMessenger:[AMapBasePlugin registrar].messenger];
   [_markerClickedEventChannel setStreamHandler:_eventHandler];
 
   _mapHandler = [[MapEventHandler alloc] init];
      _mapDragChangeEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@", mapDragChangeChannelName]
-                                                             binaryMessenger:[AMapBasePlugin registrar].messenger];
-     [_mapDragChangeEventChannel setStreamHandler:_mapHandler];
+                                                        binaryMessenger:[AMapBasePlugin registrar].messenger];
+  [_mapDragChangeEventChannel setStreamHandler:_mapHandler];
+
+  _mapClickHandler = [[MapClickEventHandler alloc] init];
+     _mapClickEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@", mapClickChannelName]
+                                                        binaryMessenger:[AMapBasePlugin registrar].messenger];
+  [_mapClickEventChannel setStreamHandler:_mapClickHandler];
 }
 
 #pragma MAMapViewDelegate
@@ -169,6 +194,14 @@ static NSString *mapDragChangeChannelName = @"me.yohom/map_drag_change";
 
 - (void)mapView:(MAMapView *)mapView mapWillMoveByUser:(BOOL)wasUserAction {
 //    !_mapHandler.sink?:_mapHandler.sink(nil);
+}
+
+/// 点击地图
+- (void)mapView:(MAMapView *)mapView didSingleTappedAtCoordinate:(CLLocationCoordinate2D)coordinate{
+    LatLng *coor = [[LatLng alloc] init];
+    coor.longitude =coordinate.longitude;
+    coor.latitude =coordinate.latitude;
+    _mapClickHandler.sink([coor mj_JSONString]);
 }
 
 - (void)mapViewRequireLocationAuth:(CLLocationManager *)locationManager {

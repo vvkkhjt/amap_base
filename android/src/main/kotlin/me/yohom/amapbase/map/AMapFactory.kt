@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger
 const val mapChannelName = "me.yohom/map"
 const val markerClickedChannelName = "me.yohom/marker_clicked"
 const val mapDragChangeChannelName = "me.yohom/map_drag_change"
+const val mapClickChannelName = "me.yohom/map_click_change"
 const val success = "调用成功"
 
 class AMapFactory(private val activityState: AtomicInteger)
@@ -121,6 +122,21 @@ class AMapView(context: Context,
             override fun onCameraChange(p0: CameraPosition?) {
             }
         })
+
+        // map click event channel
+        var clickEventSink: EventChannel.EventSink? = null
+        val mapClickChannel = EventChannel(registrar.messenger(), "$mapClickChannelName")
+        mapClickChannel.setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(p0: Any?, sink: EventChannel.EventSink?) {
+                clickEventSink = sink
+            }
+            override fun onCancel(p0: Any?) {}
+        })
+
+        mapView.map.setOnMapClickListener{
+            clickEventSink?.success(it.toFieldJson())
+            true
+        }
 
         // 注册生命周期
         registrar.activity().application.registerActivityLifecycleCallbacks(this)

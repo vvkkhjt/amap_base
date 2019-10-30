@@ -10,6 +10,7 @@ import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.CameraPosition
+import com.amap.api.maps.model.Marker
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
@@ -135,7 +136,6 @@ class AMapView(context: Context,
 
         mapView.map.setOnMapClickListener{
             clickEventSink?.success(it.toFieldJson())
-            true
         }
 
         // 注册生命周期

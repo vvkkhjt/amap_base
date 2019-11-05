@@ -98,6 +98,7 @@ static NSString *mapClickChannelName = @"me.yohom/map_click_change";
   FlutterMethodChannel *_methodChannel;
   FlutterEventChannel *_markerClickedEventChannel;
   FlutterEventChannel *_mapDragChangeEventChannel;
+  FlutterEventChannel *_mapClickedEventChannel;
   MAMapView *_mapView;
   MarkerEventHandler *_eventHandler;
   MapEventHandler *_mapHandler;
@@ -176,9 +177,9 @@ static NSString *mapClickChannelName = @"me.yohom/map_click_change";
   [_mapDragChangeEventChannel setStreamHandler:_mapHandler];
 
   _mapClickHandler = [[MapClickEventHandler alloc] init];
-     _mapClickEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@", mapClickChannelName]
+     _mapClickedEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@", mapClickChannelName]
                                                         binaryMessenger:[AMapBasePlugin registrar].messenger];
-  [_mapClickEventChannel setStreamHandler:_mapClickHandler];
+  [_mapClickedEventChannel setStreamHandler:_mapClickHandler];
 }
 
 #pragma MAMapViewDelegate

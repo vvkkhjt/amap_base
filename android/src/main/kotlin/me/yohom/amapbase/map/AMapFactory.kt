@@ -10,6 +10,7 @@ import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.CameraPosition
+import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Marker
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -134,7 +135,7 @@ class AMapView(context: Context,
             override fun onCancel(p0: Any?) {}
         })
 
-        mapView.map.setOnMapClickListener{
+        mapView.map.setOnMapClickListener {
             clickEventSink?.success(it.toFieldJson())
         }
 

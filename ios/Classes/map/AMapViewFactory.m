@@ -213,7 +213,7 @@ static NSString *mapClickChannelName = @"me.yohom/map_click_change";
 - (void)mapView:(MAMapView *)mapView didSelectAnnotationView:(MAAnnotationView *)view {
   if ([view.annotation isKindOfClass:[MarkerAnnotation class]]) {
     MarkerAnnotation *annotation = (MarkerAnnotation *) view.annotation;
-    _eventHandler.sink([annotation.markerOptions mj_JSONString]);
+    !_eventHandler.sink?:_eventHandler.sink([annotation.markerOptions mj_JSONString]);
   }
 }
 

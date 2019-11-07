@@ -202,7 +202,7 @@ static NSString *mapClickChannelName = @"me.yohom/map_click_change";
     LatLng *coor = [[LatLng alloc] init];
     coor.longitude =coordinate.longitude;
     coor.latitude =coordinate.latitude;
-    _mapClickHandler.sink([coor mj_JSONString]);
+    !_mapClickHandler.sink?:_mapClickHandler.sink([coor mj_JSONString]);
 }
 
 - (void)mapViewRequireLocationAuth:(CLLocationManager *)locationManager {
